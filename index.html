@@ -1,342 +1,47 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>إكس أو المحترف - XO Pro</title>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #2c3e50;
-      --secondary: #3498db;
-      --accent: #e74c3c;
-      --background: #ecf0f1;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Tajawal', sans-serif;
-    }
-
-    body {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(-45deg, #1abc9c, #3498db, #9b59b6, #e74c3c);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
-    }
-
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .container {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 2rem;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      width: 95%;
-      max-width: 600px;
-      display: none;
-    }
-
-    .board {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin: 1.5rem 0;
-    }
-
-    .cell {
-      aspect-ratio: 1;
-      background: white;
-      border: 2px solid var(--primary);
-      border-radius: 15px;
-      font-size: 3rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .cell:hover {
-      transform: scale(1.05);
-    }
-
-    .controls button {
-      margin: 0.3rem;
-      padding: 0.7rem 1rem;
-      border: none;
-      border-radius: 10px;
-      background: var(--secondary);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .controls button:hover {
-      background: var(--accent);
-    }
-
-    .modal {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 2rem;
-      border-radius: 15px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-    }
-
-    input[type="text"] {
-      width: 80%;
-      padding: 0.6rem;
-      margin: 1rem 0;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
-
-    .skip-btn {
-      background-color: #7f8c8d !important;
-      margin-top: 5px;
-    }
-
-    .player-info {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background: white;
-      padding: 1rem 2rem;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لعبة XO احترافية</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="player-info">
-    👤 <span id="playerName">ضيف</span> | 🎯 <span id="gameStatus">جاهز!</span>
+<div id="app">
+  <div id="screen-start">
+    <h2>أهلاً بك في XO 🎮</h2>
+    <input type="text" id="playerName" placeholder="اكتب اسمك هنا" />
+    <button onclick="startGame()">✅ بدء اللعب</button>
+    <button onclick="skipName()">⏭ تخطي</button>
   </div>
 
-  <div class="container">
-    <h1 style="text-align:center; color: var(--primary);">🎮 إكس أو المحترف</h1>
-
-    <div class="controls">
-      <button onclick="startGame('easy')">🧠 سهل</button>
-      <button onclick="startGame('medium')">⚙️ متوسط</button>
-      <button onclick="startGame('hard')">💡 صعب</button>
-    </div>
-
-    <div class="board">
-      <div class="cell" data-index="0"></div>
-      <div class="cell" data-index="1"></div>
-      <div class="cell" data-index="2"></div>
-      <div class="cell" data-index="3"></div>
-      <div class="cell" data-index="4"></div>
-      <div class="cell" data-index="5"></div>
-      <div class="cell" data-index="6"></div>
-      <div class="cell" data-index="7"></div>
-      <div class="cell" data-index="8"></div>
-    </div>
+  <div id="screen-mode" style="display:none">
+    <h3>اختر نمط اللعب</h3>
+    <button onclick="selectAIMode()">🖥️ ضد الكمبيوتر</button>
+    <button onclick="createRoom()">👥 إنشاء غرفة خاصة</button>
+    <button onclick="joinRoom()">🔑 الانضمام لغرفة</button>
+    <button onclick="randomMatch()">🎲 مواجهة عشوائية</button>
   </div>
 
-  <div class="modal" id="usernameModal">
-    <div class="modal-content">
-      <h3>🎮 أدخل اسمك (اختياري)</h3>
-      <input type="text" id="usernameInput" placeholder="اسمك هنا...">
-      <br>
-      <button onclick="saveUsername()">✅ دخول</button>
-      <button class="skip-btn" onclick="generateRandomUsername()">⏭ تخطي</button>
-    </div>
+  <div id="screen-difficulty" style="display:none">
+    <h3>اختر مستوى الصعوبة</h3>
+    <button onclick="startAI('easy')">سهل</button>
+    <button onclick="startAI('medium')">متوسط</button>
+    <button onclick="startAI('hard')">صعب</button>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getDatabase, ref, set, push } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDB8NoMrvM9dSyND1CASAFImysYYkIuJFQ",
-      authDomain: "xo-game-98dd9.firebaseapp.com",
-      databaseURL: "https://xo-game-98dd9-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "xo-game-98dd9",
-      storageBucket: "xo-game-98dd9.appspot.com",
-      messagingSenderId: "682663768536",
-      appId: "1:682663768536:web:42c950c94d01ffc72d42ad"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    let username = "ضيف";
-    let currentPlayer = 'X';
-    let gameActive = false;
-    let gameMode = 'easy';
-
-    const boardEl = document.querySelectorAll('.cell');
-
-    window.generateRandomUsername = function () {
-      username = "user" + Math.floor(1000 + Math.random() * 9000);
-      finishLogin();
-    };
-
-    window.saveUsername = function () {
-      const val = document.getElementById('usernameInput').value.trim();
-      if (val) username = val;
-      else return generateRandomUsername();
-      finishLogin();
-    };
-
-    function finishLogin() {
-      localStorage.setItem("xoUsername", username);
-      document.getElementById("playerName").textContent = username;
-      document.getElementById("usernameModal").style.display = "none";
-      document.querySelector(".container").style.display = "block";
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const saved = localStorage.getItem("xoUsername");
-      if (saved) {
-        username = saved;
-        document.getElementById("playerName").textContent = username;
-        document.querySelector(".container").style.display = "block";
-      } else {
-        document.getElementById("usernameModal").style.display = "flex";
-      }
-    });
-
-    window.startGame = function (mode) {
-      gameMode = mode;
-      gameActive = true;
-      currentPlayer = 'X';
-      boardEl.forEach(cell => cell.textContent = '');
-      document.getElementById("gameStatus").textContent = "🚀 دور X";
-    };
-
-    boardEl.forEach((cell, index) => {
-      cell.addEventListener('click', () => {
-        if (!gameActive || cell.textContent) return;
-        cell.textContent = currentPlayer;
-        const result = checkWinner();
-        if (result) return endGame(result);
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-        document.getElementById("gameStatus").textContent = `دور: ${currentPlayer}`;
-        if (currentPlayer === 'O') setTimeout(aiMove, 500);
-      });
-    });
-
-    function checkWinner() {
-      const values = [...boardEl].map(c => c.textContent);
-      const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-      for (let [a,b,c] of wins) {
-        if (values[a] && values[a] === values[b] && values[a] === values[c]) return values[a];
-      }
-      return values.includes('') ? null : 'draw';
-    }
-
-    function endGame(result) {
-      gameActive = false;
-      const msg = result === 'draw' ? '🤝 تعادل!' : `🏆 فاز: ${result}`;
-      document.getElementById("gameStatus").textContent = msg;
-      saveMatchResult(result);
-    }
-
-    function aiMove() {
-      const board = [...boardEl].map(c => c.textContent);
-      const empty = board.map((val, i) => val === '' ? i : null).filter(v => v !== null);
-      let move;
-
-      if (gameMode === 'easy') {
-        move = empty[Math.floor(Math.random() * empty.length)];
-      } else if (gameMode === 'medium') {
-        move = Math.random() < 0.5 ? empty[Math.floor(Math.random() * empty.length)] : getBestMove(board);
-      } else {
-        move = getBestMove(board);
-      }
-
-      handleAiMove(move);
-    }
-
-    function handleAiMove(index) {
-      if (!gameActive || boardEl[index].textContent) return;
-      boardEl[index].textContent = currentPlayer;
-      const result = checkWinner();
-      if (result) return endGame(result);
-      currentPlayer = 'X';
-      document.getElementById("gameStatus").textContent = "دور: X";
-    }
-
-    function getBestMove(board) {
-      let bestScore = -Infinity;
-      let move = -1;
-      for (let i = 0; i < 9; i++) {
-        if (board[i] === '') {
-          board[i] = 'O';
-          let score = minimax(board, false);
-          board[i] = '';
-          if (score > bestScore) {
-            bestScore = score;
-            move = i;
-          }
-        }
-      }
-      return move;
-    }
-
-    function minimax(board, isMax) {
-      const result = checkWinner();
-      if (result) return result === 'O' ? 1 : result === 'X' ? -1 : 0;
-
-      if (isMax) {
-        let best = -Infinity;
-        for (let i = 0; i < 9; i++) {
-          if (board[i] === '') {
-            board[i] = 'O';
-            let score = minimax(board, false);
-            board[i] = '';
-            best = Math.max(best, score);
-          }
-        }
-        return best;
-      } else {
-        let best = Infinity;
-        for (let i = 0; i < 9; i++) {
-          if (board[i] === '') {
-            board[i] = 'X';
-            let score = minimax(board, true);
-            board[i] = '';
-            best = Math.min(best, score);
-          }
-        }
-        return best;
-      }
-    }
-
-    function saveMatchResult(winner) {
-      const matchRef = push(ref(db, "matches"));
-      set(matchRef, {
-        player: username,
-        result: winner,
-        mode: gameMode,
-        timestamp: new Date().toISOString()
-      });
-    }
-  </script>
+  <div id="screen-game" style="display:none">
+    <h3 class="status" id="gameStatus">دور: </h3>
+    <div class="grid" id="grid"></div>
+    <button onclick="resetGame()">🔄 إعادة اللعبة</button>
+    <button onclick="goHome()">🏠 القائمة</button>
+    <div id="chat">
+      <textarea id="chatBox" placeholder="💬 اكتب رسالة..."></textarea>
+      <button onclick="sendMessage()">📨 إرسال</button>
+      <div id="messages"></div>
+    </div>
+  </div>
+</div>
+<script type="module" src="main.js"></script>
 </body>
 </html>
