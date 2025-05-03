@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إكس أو المحترف - XO Pro</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --background: #ecf0f1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(-45deg, #1abc9c, #3498db, #9b59b6, #e74c3c);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.97);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 95%;
+            max-width: 600px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 2rem 0;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        button {
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            background: var(--secondary);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            animation: modalEnter 0.3s ease;
+        }
+
+        @keyframes modalEnter {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .player-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .waiting-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            z-index: 999;
+        }
+
+        @media (max-width: 480px) {
+            .cell { font-size: 3rem; }
+            button { font-size: 1rem; }
+            .container { padding: 1rem; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="player-info">
+        <div>👤 <span id="playerName">ضيف</span></div>
+        <div id="gameStatus">⚡ جاهز للعب!</div>
+    </div>
+
+    <div class="container">
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 1.5rem;">🎮 إكس أو المحترف</h1>
+        
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <div class="controls">
+            <button onclick="startGame('ai')">🖥️ ضد الكمبيوتر</button>
+            <button onclick="showRoomModal('create')">👥 غرفة خاصة</button>
+            <button onclick="showRoomModal('join')">🔗 انضم برمز</button>
+            <button onclick="findRandomMatch()">🎲 مواجهة عشوائية</button>
+        </div>
+    </div>
+
+    <div id="usernameModal" class="modal" style="display: flex;">
+        <div class="modal-content">
+            <h3>👤 ادخل اسم اللاعب</h3>
+            <input type="text" id="usernameInput" class="modal-input" placeholder="اسمك هنا...">
+            <button onclick="saveUsername()" style="margin-top: 1rem;">✅ بدء اللعب</button>
+        </div>
+    </div>
+
+    <div id="roomModal" class="modal">
+        <div class="modal-content">
+            <h3 id="roomTitle">🎮 إدارة الغرفة</h3>
+            <input type="text" id="roomCodeInput" class="modal-input" placeholder="رمز الغرفة...">
+            <div id="roomStatus" style="margin: 1rem 0; color: var(--secondary);"></div>
+            <button onclick="handleRoomAction()" id="roomActionBtn">⚡ إنشاء</button>
+            <button onclick="closeModals()" style="background: var(--accent); margin-top: 0.5rem;">❌ إلغاء</button>
+        </div>
+    </div>
+
+    <div class="waiting-overlay" id="waitingOverlay">
+        <div class="loader"></div>
+        <div style="margin-top: 1rem;">⏳ جاري البحث عن خصم... (<span id="waitTimer">0</span> ثانية)</div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            getDoc, 
+            updateDoc, 
+            onSnapshot,
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+        import { 
+            getDatabase, 
+            ref, 
+            set, 
+            onValue,
+            off,
+            remove 
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+        // التهيئة (استبدل بإعداداتك)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDB8NoMrvM9dSyND1CASAFImysYYkIuJFQ",
+            authDomain: "xo-game-98dd9.firebaseapp.com",
+            databaseURL: "https://xo-game-98dd9-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "xo-game-98dd9",
+            storageBucket: "xo-game-98dd9.firebasestorage.app",
+            messagingSenderId: "682663768536",
+            appId: "1:682663768536:web:42c950c94d01ffc72d42ad",
+            measurementId: "G-WGMLSX68GK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const rtdb = getDatabase(app);
+
+        // متغيرات اللعبة
+        let currentPlayer = 'X';
+        let gameId = null;
+        let username = 'ضيف';
+        let playerSymbol = '';
+        let aiDifficulty = 'hard';
+        let gameMode = '';
+        let waitTimer = 0;
+        let timerInterval = null;
+
+        // نظام الأسماء
+        function saveUsername() {
+            const usernameInput = document.getElementById('usernameInput').value.trim();
+            if(usernameInput) {
+                username = usernameInput;
+                localStorage.setItem('xoUsername', username);
+                document.getElementById('usernameModal').style.display = 'none';
+                document.getElementById('playerName').textContent = username;
+            }
+        }
+
+        // نظام الغرف
+        async function createRoom() {
+            gameId = generateRoomCode();
+            await setDoc(doc(db, 'rooms', gameId), {
+                players: [username],
+                board: Array(9).fill(''),
+                status: 'waiting',
+                createdAt: serverTimestamp()
+            });
+            showRoomInfo(`🔑 رمز الغرفة: ${gameId}`);
+            listenToRoom();
+        }
+
+        async function joinRoom(code) {
+            const roomRef = doc(db, 'rooms', code);
+            const roomSnap = await getDoc(roomRef);
+            
+            if(roomSnap.exists()) {
+                gameId = code;
+                const roomData = roomSnap.data();
+                if(roomData.players.length < 2) {
+                    await updateDoc(roomRef, {
+                        players: [...roomData.players, username]
+                    });
+                    listenToRoom();
+                } else {
+                    showRoomInfo('❌ الغرفة ممتلئة!');
+                }
+            } else {
+                showRoomInfo('❌ الرمز غير صحيح!');
+            }
+        }
+
+        function listenToRoom() {
+            const unsub = onSnapshot(doc(db, 'rooms', gameId), (doc) => {
+                const data = doc.data();
+                if(data.status === 'active') {
+                    playerSymbol = data.players[0] === username ? 'X' : 'O';
+                    updateGameBoard(data.board);
+                    updateGameStatus(data.currentTurn === playerSymbol ? '🎮 دورك!' : '⏳ انتظر الخصم...');
+                }
+            });
+        }
+
+        // نظام الذكاء الاصطناعي
+        function aiMove() {
+            if(gameMode !== 'ai' || currentPlayer !== 'O') return;
+            
+            const board = Array.from(document.querySelectorAll('.cell')).map(c => c.textContent);
+            const move = aiDifficulty === 'easy' ? getRandomMove(board) : getBestMove(board);
+            
+            setTimeout(() => {
+                document.querySelector(`[data-index="${move}"]`).click();
+            }, 1000);
+        }
+
+        function getBestMove(board) {
+            // خوارزمية minimax متقدمة
+            let bestScore = -Infinity;
+            let bestMove = -1;
+
+            for(let i = 0; i < 9; i++) {
+                if(board[i] === '') {
+                    board[i] = 'O';
+                    let score = minimax(board, false);
+                    board[i] = '';
+                    if(score > bestScore) {
+                        bestScore = score;
+                        bestMove = i;
+                    }
+                }
+            }
+            return bestMove;
+        }
+
+        function minimax(board, isMaximizing) {
+            const result = checkWinner(board);
+            if(result !== null) return result === 'O' ? 1 : result === 'X' ? -1 : 0;
+
+            if(isMaximizing) {
+                let bestScore = -Infinity;
+                for(let i = 0; i < 9; i++) {
+                    if(board[i] === '') {
+                        board[i] = 'O';
+                        let score = minimax(board, false);
+                        board[i] = '';
+                        bestScore = Math.max(score, bestScore);
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for(let i = 0; i < 9; i++) {
+                    if(board[i] === '') {
+                        board[i] = 'X';
+                        let score = minimax(board, true);
+                        board[i] = '';
+                        bestScore = Math.min(score, bestScore);
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        // نظام المباراة العشوائية
+        async function findRandomMatch() {
+            showWaitingOverlay();
+            const waitingRef = ref(rtdb, 'waiting');
+            
+            onValue(waitingRef, async (snapshot) => {
+                const waitingPlayers = snapshot.val() || {};
+                const opponent = Object.keys(waitingPlayers).find(p => p !== username);
+                
+                if(opponent) {
+                    gameId = generateRoomCode();
+                    await setDoc(doc(db, 'rooms', gameId), {
+                        players: [username, opponent],
+                        board: Array(9).fill(''),
+                        status: 'active',
+                        currentTurn: 'X',
+                        createdAt: serverTimestamp()
+                    });
+                    remove(ref(rtdb, `waiting/${opponent}`));
+                    hideWaitingOverlay();
+                    listenToRoom();
+                } else {
+                    set(ref(rtdb, `waiting/${username}`), true);
+                }
+            }, { onlyOnce: true });
+        }
+
+        // الوظائف المساعدة
+        function generateRoomCode() {
+            return Math.random().toString(36).substr(2, 6).toUpperCase();
+        }
+
+        function updateGameBoard(board) {
+            document.querySelectorAll('.cell').forEach((cell, index) => {
+                cell.textContent = board[index];
+            });
+        }
+
+        function updateGameStatus(status) {
+            document.getElementById('gameStatus').textContent = status;
+        }
+
+        function showWaitingOverlay() {
+            document.getElementById('waitingOverlay').style.display = 'flex';
+            timerInterval = setInterval(() => {
+                document.getElementById('waitTimer').textContent = ++waitTimer;
+            }, 1000);
+        }
+
+        function hideWaitingOverlay() {
+            document.getElementById('waitingOverlay').style.display = 'none';
+            clearInterval(timerInterval);
+            waitTimer = 0;
+        }
+
+        // التهيئة الأولية
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUsername = localStorage.getItem('xoUsername');
+            if(savedUsername) {
+                username = savedUsername;
+                document.getElementById('playerName').textContent = username;
+                document.getElementById('usernameModal').style.display = 'none';
+            }
+        });
+
+        // الأحداث
+        document.querySelectorAll('.cell').forEach(cell => {
+            cell.addEventListener('click', () => handleMove(cell.dataset.index));
+        });
+    </script>
+</body>
+</html>
