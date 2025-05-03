@@ -1,47 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>لعبة XO احترافية</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div id="app">
-  <div id="screen-start">
-    <h2>أهلاً بك في XO 🎮</h2>
-    <input type="text" id="playerName" placeholder="اكتب اسمك هنا" />
-    <button onclick="startGame()">✅ بدء اللعب</button>
-    <button onclick="skipName()">⏭ تخطي</button>
-  </div>
-
-  <div id="screen-mode" style="display:none">
-    <h3>اختر نمط اللعب</h3>
-    <button onclick="selectAIMode()">🖥️ ضد الكمبيوتر</button>
-    <button onclick="createRoom()">👥 إنشاء غرفة خاصة</button>
-    <button onclick="joinRoom()">🔑 الانضمام لغرفة</button>
-    <button onclick="randomMatch()">🎲 مواجهة عشوائية</button>
-  </div>
-
-  <div id="screen-difficulty" style="display:none">
-    <h3>اختر مستوى الصعوبة</h3>
-    <button onclick="startAI('easy')">سهل</button>
-    <button onclick="startAI('medium')">متوسط</button>
-    <button onclick="startAI('hard')">صعب</button>
-  </div>
-
-  <div id="screen-game" style="display:none">
-    <h3 class="status" id="gameStatus">دور: </h3>
-    <div class="grid" id="grid"></div>
-    <button onclick="resetGame()">🔄 إعادة اللعبة</button>
-    <button onclick="goHome()">🏠 القائمة</button>
-    <div id="chat">
-      <textarea id="chatBox" placeholder="💬 اكتب رسالة..."></textarea>
-      <button onclick="sendMessage()">📨 إرسال</button>
-      <div id="messages"></div>
-    </div>
-  </div>
-</div>
-<script type="module" src="main.js"></script>
-</body>
-</html>
