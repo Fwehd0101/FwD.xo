@@ -47,6 +47,7 @@
             max-width: 600px;
             backdrop-filter: blur(10px);
             transition: transform 0.3s;
+            display: none; /* مخفي بشكل افتراضي */
         }
 
         .board {
@@ -159,6 +160,14 @@
             button { font-size: 1rem; }
             .container { padding: 1rem; }
         }
+
+        #usernameModal {
+            display: none;
+        }
+
+        #usernameModal[style] {
+            display: flex !important;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -191,11 +200,11 @@
         </div>
     </div>
 
-    <div id="usernameModal" class="modal" style="display: flex;">
+    <div id="usernameModal" class="modal">
         <div class="modal-content">
             <h3>👤 ادخل اسم اللاعب</h3>
             <input type="text" id="usernameInput" class="modal-input" placeholder="اسمك هنا...">
-            <button onclick="saveUsername()" style="margin-top: 1rem;">✅ بدء اللعب</button>
+            <button onclick="window.saveUsername()" style="margin-top: 1rem;">✅ بدء اللعب</button>
         </div>
     </div>
 
@@ -261,14 +270,17 @@
         let waitTimer = 0;
         let timerInterval = null;
 
-        // نظام الأسماء
-        function saveUsername() {
+        // دالة حفظ الاسم (مرفقة على window)
+        window.saveUsername = function() {
             const usernameInput = document.getElementById('usernameInput').value.trim();
             if(usernameInput) {
                 username = usernameInput;
                 localStorage.setItem('xoUsername', username);
                 document.getElementById('usernameModal').style.display = 'none';
                 document.getElementById('playerName').textContent = username;
+                document.querySelector('.container').style.display = 'block';
+            } else {
+                alert('الرجاء إدخال اسم صحيح!');
             }
         }
 
@@ -329,7 +341,6 @@
         }
 
         function getBestMove(board) {
-            // خوارزمية minimax متقدمة
             let bestScore = -Infinity;
             let bestMove = -1;
 
@@ -376,32 +387,23 @@
             }
         }
 
-        // نظام المباراة العشوائية
-        async function findRandomMatch() {
-            showWaitingOverlay();
-            const waitingRef = ref(rtdb, 'waiting');
-            
-            onValue(waitingRef, async (snapshot) => {
-                const waitingPlayers = snapshot.val() || {};
-                const opponent = Object.keys(waitingPlayers).find(p => p !== username);
-                
-                if(opponent) {
-                    gameId = generateRoomCode();
-                    await setDoc(doc(db, 'rooms', gameId), {
-                        players: [username, opponent],
-                        board: Array(9).fill(''),
-                        status: 'active',
-                        currentTurn: 'X',
-                        createdAt: serverTimestamp()
-                    });
-                    remove(ref(rtdb, `waiting/${opponent}`));
-                    hideWaitingOverlay();
-                    listenToRoom();
-                } else {
-                    set(ref(rtdb, `waiting/${username}`), true);
-                }
-            }, { onlyOnce: true });
-        }
+        // التهيئة الأولية
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUsername = localStorage.getItem('xoUsername');
+            if(savedUsername) {
+                username = savedUsername;
+                document.getElementById('playerName').textContent = username;
+                document.getElementById('usernameModal').style.display = 'none';
+                document.querySelector('.container').style.display = 'block';
+            } else {
+                document.getElementById('usernameModal').style.display = 'flex';
+            }
+        });
+
+        // الأحداث
+        document.querySelectorAll('.cell').forEach(cell => {
+            cell.addEventListener('click', () => handleMove(cell.dataset.index));
+        });
 
         // الوظائف المساعدة
         function generateRoomCode() {
@@ -418,33 +420,9 @@
             document.getElementById('gameStatus').textContent = status;
         }
 
-        function showWaitingOverlay() {
-            document.getElementById('waitingOverlay').style.display = 'flex';
-            timerInterval = setInterval(() => {
-                document.getElementById('waitTimer').textContent = ++waitTimer;
-            }, 1000);
+        window.closeModals = function() {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         }
-
-        function hideWaitingOverlay() {
-            document.getElementById('waitingOverlay').style.display = 'none';
-            clearInterval(timerInterval);
-            waitTimer = 0;
-        }
-
-        // التهيئة الأولية
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedUsername = localStorage.getItem('xoUsername');
-            if(savedUsername) {
-                username = savedUsername;
-                document.getElementById('playerName').textContent = username;
-                document.getElementById('usernameModal').style.display = 'none';
-            }
-        });
-
-        // الأحداث
-        document.querySelectorAll('.cell').forEach(cell => {
-            cell.addEventListener('click', () => handleMove(cell.dataset.index));
-        });
     </script>
 </body>
 </html>
