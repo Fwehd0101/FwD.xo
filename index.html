@@ -1,48 +1,0 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>XO Game Ultimate</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
-</head>
-<body>
-  <div id="app">
-    <div class="start-screen">
-      <h1>XO Game</h1>
-      <input type="text" id="username" placeholder="ادخل اسمك" />
-      <button onclick="startGame()">بدء اللعب</button>
-      <button onclick="skipName()">تخطي</button>
-    </div>
-
-    <div class="mode-selection" style="display:none;">
-      <h2>اختر نمط اللعب</h2>
-      <button onclick="playAI()">🖥️ ضد الكمبيوتر</button>
-      <button onclick="createRoom()">🔒 غرفة خاصة</button>
-      <button onclick="joinRandom()">🎲 مواجهة عشوائية</button>
-    </div>
-
-    <div class="game-board" style="display:none;">
-      <div id="player-info"></div>
-      <div id="board"></div>
-      <div id="status-bar"></div>
-      <button onclick="resetGame()">🔄 إعادة اللعبة</button>
-      <button onclick="goHome()">🏠 القائمة</button>
-    </div>
-
-    <div class="chat-section" style="display:none;">
-      <h3>💬 الدردشة</h3>
-      <div id="chat-messages"></div>
-      <input type="text" id="chat-input" placeholder="اكتب رسالة..." />
-      <button onclick="sendMessage()">إرسال</button>
-    </div>
-
-    <button class="friend-btn" style="display:none;">🤝 إضافة صديق</button>
-  </div>
-
-  <script src="app.js"></script>
-</body>
-</html>
