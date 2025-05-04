@@ -1,14 +1,100 @@
 body {
-  margin:0; font-family: Tajawal, sans-serif;
-  background: linear-gradient(-45deg,#1abc9c,#3498db,#9b59b6,#e74c3c);
-  background-size:400% 400%;animation:gradientBG 15s ease infinite;
-  color:#333; text-align:center;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(270deg, #ff6ec4, #7873f5);
+  background-size: 400% 400%;
+  animation: wave 10s ease infinite;
+  color: white;
+  text-align: center;
+  min-height: 100vh;
 }
-@keyframes gradientBG{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-.screen{display:none;padding:20px;}
-.screen:not(.hidden){display:block;}
-.board{display:grid;grid-template-columns:repeat(3,100px);gap:5px;margin:10px auto;}
-.board div{width:100px;height:100px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;}
-#chatSection{margin-top:15px;}
-.hidden{display:none;}
-input,button{padding:10px;margin:5px;font-size:1rem;border-radius:8px;border:1px solid #ccc;}
+
+@keyframes wave {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+button {
+  padding: 12px 24px;
+  margin: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  transition: 0.3s;
+}
+
+button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+input {
+  padding: 12px;
+  margin: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  gap: 10px;
+  justify-content: center;
+  margin: 30px auto;
+}
+
+#board div {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 2.5em;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: 0.2s;
+}
+
+#board div:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+#online-users {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  backdrop-filter: blur(5px);
+}
+
+.chat-section {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 15px;
+  padding: 15px;
+}
+
+#chat-messages {
+  height: 200px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  text-align: right;
+}
+
+.status-bar {
+  font-size: 18px;
+  margin: 15px 0;
+}
