@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لعبة إكس أو - XO Ultimate</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
+</head>
+<body>
+  <div id="online-users">👥 المتصلين: <span>0</span></div>
+
+  <div id="app">
+    <!-- شاشة البداية -->
+    <div class="start-screen">
+      <h1>🎮 XO Ultimate</h1>
+      <input type="text" id="username" placeholder="اسم اللاعب">
+      <button onclick="startGame()">بدء اللعب</button>
+      <button onclick="skipName()">تخطي الاسم</button>
+    </div>
+
+    <!-- اختيار النمط -->
+    <div class="mode-selection" style="display:none;">
+      <h2>⚙️ اختر وضع اللعب</h2>
+      <button onclick="playAI()">🖥️ ضد الذكاء الاصطناعي</button>
+      <button onclick="createPrivateRoom()">🔒 غرفة خاصة</button>
+      <button onclick="joinRandomMatch()">🎲 مواجهة عشوائية</button>
+    </div>
+
+    <!-- لوحة اللعبة -->
+    <div class="game-board" style="display:none;">
+      <div id="player-info" class="status-bar"></div>
+      <div id="board"></div>
+      <div id="status-bar" class="status-bar"></div>
+      <button onclick="resetGame()">🔄 إعادة</button>
+      <button onclick="goHome()">🏠 الرئيسية</button>
+    </div>
+
+    <!-- الدردشة -->
+    <div class="chat-section" style="display:none;">
+      <h3>💬 دردشة اللاعبين</h3>
+      <div id="chat-messages"></div>
+      <input type="text" id="chat-input" placeholder="اكتب رسالة...">
+      <button onclick="sendMessage()">إرسال</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
