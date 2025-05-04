@@ -1,37 +1,0 @@
-
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>XO Game - Ultimate Edition</title>
-  <link rel="stylesheet" href="style.css" />
-  <script type="module" src="main.js" defer></script>
-</head>
-<body>
-  <div class="welcome-screen">
-    <h1>مرحباً بك في XO</h1>
-    <input type="text" id="usernameInput" placeholder="أدخل اسمك" />
-    <button onclick="startWithName()">بدء اللعب</button>
-    <button onclick="skipName()">تخطي</button>
-  </div>
-  <div id="gameModes" style="display:none;">
-    <button onclick="startAIGame()">🖥️ ضد الكمبيوتر</button>
-    <button disabled>👥 غرفة خاصة (قريباً)</button>
-    <button disabled>🎲 مواجهة عشوائية (قريباً)</button>
-  </div>
-  <div id="gameBoard" style="display:none;">
-    <div id="statusBar"></div>
-    <div class="board">
-      <!-- خلايا اللعب -->
-    </div>
-    <button onclick="restartGame()">🔄 إعادة</button>
-    <button onclick="goHome()">🏠 رجوع</button>
-    <div id="chatSection" style="display:none;">
-      <div id="chatBox"></div>
-      <input type="text" placeholder="اكتب رسالة..." />
-    </div>
-    <button onclick="addFriend()">➕ إضافة صديق</button>
-  </div>
-</body>
-</html>
