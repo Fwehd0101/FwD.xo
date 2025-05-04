@@ -1,0 +1,14 @@
+body {
+  margin:0; font-family: Tajawal, sans-serif;
+  background: linear-gradient(-45deg,#1abc9c,#3498db,#9b59b6,#e74c3c);
+  background-size:400% 400%;animation:gradientBG 15s ease infinite;
+  color:#333; text-align:center;
+}
+@keyframes gradientBG{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.screen{display:none;padding:20px;}
+.screen:not(.hidden){display:block;}
+.board{display:grid;grid-template-columns:repeat(3,100px);gap:5px;margin:10px auto;}
+.board div{width:100px;height:100px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;}
+#chatSection{margin-top:15px;}
+.hidden{display:none;}
+input,button{padding:10px;margin:5px;font-size:1rem;border-radius:8px;border:1px solid #ccc;}
